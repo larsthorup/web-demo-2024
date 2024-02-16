@@ -3,25 +3,25 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-function AlbumPicker() {
+export function AlbumPicker() {
   const [albums, setAlbums] = useState<string[]>([]);
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const target = e.target as typeof e.target & {
+    const form = e.target as HTMLFormElement;
+    const formElements = form.elements as typeof form.elements & {
       artist: { value: string };
     };
-    const artist = encodeURIComponent(target.artist.value);
+    const artist = encodeURIComponent(formElements.artist.value);
     const url = `https://musicbrainz.org/ws/2/release?fmt=json&query=artist:${artist}`;
     const response = await fetch(url);
     const mbResult = (await response.json()) as {
       releases: { title: string }[];
     };
-    console.log(mbResult);
     const { releases } = mbResult;
     setAlbums(releases.map(({ title }) => title));
   }
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} aria-label="search">
       <label>
         Artist name:
         <input name="artist" />
