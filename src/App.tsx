@@ -9,9 +9,13 @@ interface Album {
 }
 
 export function AlbumPicker() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [albums, setAlbums] = useState<Album[]>([]);
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
     const form = e.target as HTMLFormElement;
     const formElements = form.elements as typeof form.elements & {
       artist: HTMLInputElement;
@@ -31,11 +35,26 @@ export function AlbumPicker() {
     const query = `artist:${artist} AND date:${date}`;
     const url = `https://musicbrainz.org/ws/2/release?fmt=json&query=${query}`;
     const response = await fetch(url);
+    if (!response.ok) {
+      setError(`Failed to search: ${response.statusText}`);
+    }
     const mbResult = (await response.json()) as {
       releases: { title: string; date: string }[];
     };
     const { releases } = mbResult;
     setAlbums(releases.map(({ title, date }) => ({ title, date })));
+    const logUrl = 'https://eolqod83qyz4plh.m.pipedream.net';
+    const logResponse = await fetch(logUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ artist, date, count: releases.length }),
+    });
+    if (!logResponse.ok) {
+      setError(`Failed to log search: ${logResponse.statusText}`);
+    }
+    setIsLoading(false);
   }
   function onValidate(e: FormEvent) {
     const target = e.target as HTMLInputElement;
@@ -61,12 +80,20 @@ export function AlbumPicker() {
         onInput={onValidate}
       />
       <button type="submit">Search</button>
-      <p>Albums:</p>
-      <ol>
-        {albums.map(({title, date}) => (
-          <li>{title} - {date}</li>
-        ))}
-      </ol>
+      {isLoading && <p>Searching...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {!isLoading && (
+        <>
+          <p>Albums:</p>
+          <ol>
+            {albums.map(({ title, date }) => (
+              <li>
+                {title} - {date}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
     </form>
   );
 }

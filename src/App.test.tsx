@@ -45,5 +45,15 @@ describe(AlbumPicker.name, () => {
     expect(mockFetch).toHaveBeenCalledWith(
       "https://musicbrainz.org/ws/2/release?fmt=json&query=artist:rihanna AND date:2005"
     );
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://eolqod83qyz4plh.m.pipedream.net",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ artist: "rihanna", date: "2005", count: 21 }),
+      }
+    );
   });
 });
