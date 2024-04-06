@@ -44,3 +44,15 @@
 input:invalid {
   border: 2px solid red;
 }
+
+.page {
+  transition: opacity 0.8s ease-in;
+}
+
+.page.navigating {
+  opacity: 0;
+}
+
+.page.navigated {
+  opacity: 1;
+}

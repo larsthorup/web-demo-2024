@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import mockResponse from "./mockResponse.json";
 import AlbumPicker from "./AlbumPicker";
+import { routes } from "./routes";
+import { RouterProvider, createMemoryRouter } from "react-router-dom";
 
 describe(AlbumPicker.name, () => {
   afterEach(() => {
@@ -18,7 +20,8 @@ describe(AlbumPicker.name, () => {
       } as Response;
     });
 
-    render(<AlbumPicker />);
+    const router = createMemoryRouter(routes, { initialEntries: ["/albums"] });
+    render(<RouterProvider router={router} />);
 
     const artistInput = screen.getByLabelText("Artist name:");
     await user.type(artistInput, "rihanna");

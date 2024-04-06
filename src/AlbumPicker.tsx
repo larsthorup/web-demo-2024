@@ -1,4 +1,5 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import NavigationBar from "./NavigationBar";
 
 interface Album {
   title: string;
@@ -9,6 +10,10 @@ export default function AlbumPicker() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [albums, setAlbums] = useState<Album[]>([]);
+  const [navigating, setNavigating] = useState(true);
+  useEffect(() => {
+    setNavigating(false);
+  }, []);
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
@@ -40,7 +45,7 @@ export default function AlbumPicker() {
     };
     const { releases } = mbResult;
     setAlbums(releases.map(({ title, date }) => ({ title, date })));
-    const logUrl = 'https://eolqod83qyz4plh.m.pipedream.net';
+    const logUrl = "https://eolqod83qyz4plh.m.pipedream.net";
     const logResponse = await fetch(logUrl, {
       method: "POST",
       headers: {
@@ -62,35 +67,38 @@ export default function AlbumPicker() {
     }
   }
   return (
-    <form onSubmit={handleSubmit} aria-label="search">
-      <label>
-        Artist name:
-        <input name="artist" />
-      </label>
-      <br />
-      <label htmlFor="date">Release date:</label>
-      <input
-        id="date"
-        name="date"
-        type="number"
-        min={1950}
-        onInput={onValidate}
-      />
-      <button type="submit">Search</button>
-      {isLoading && <p>Searching...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!isLoading && (
-        <>
-          <p>Albums:</p>
-          <ol>
-            {albums.map(({ title, date }) => (
-              <li>
-                {title} - {date}
-              </li>
-            ))}
-          </ol>
-        </>
-      )}
-    </form>
+    <div className={`page ${navigating ? "navigating" : "navigated"}`}>
+      <NavigationBar />
+      <form onSubmit={handleSubmit} aria-label="search">
+        <label>
+          Artist name:
+          <input name="artist" />
+        </label>
+        <br />
+        <label htmlFor="date">Release date:</label>
+        <input
+          id="date"
+          name="date"
+          type="number"
+          min={1950}
+          onInput={onValidate}
+        />
+        <button type="submit">Search</button>
+        {isLoading && <p>Searching...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {!isLoading && (
+          <>
+            <p>Albums:</p>
+            <ol>
+              {albums.map(({ title, date }) => (
+                <li>
+                  {title} - {date}
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
+      </form>
+    </div>
   );
 }
