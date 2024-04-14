@@ -6,6 +6,7 @@ import mockResponse from "./mockResponse.json";
 import AlbumPicker from "./AlbumPicker";
 import { routes } from "./routes";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
+import { AlbumProvider } from "./AlbumContext";
 
 describe(AlbumPicker.name, () => {
   afterEach(() => {
@@ -21,11 +22,17 @@ describe(AlbumPicker.name, () => {
     });
 
     const router = createMemoryRouter(routes, { initialEntries: ["/albums"] });
-    render(<RouterProvider router={router} />);
+    render(
+      <AlbumProvider>
+        <RouterProvider router={router} />
+      </AlbumProvider>
+    );
 
     const artistInput = screen.getByLabelText("Artist name:");
     await user.type(artistInput, "rihanna");
-    const dateInput = screen.getByLabelText("Release date:") as HTMLInputElement;
+    const dateInput = screen.getByLabelText(
+      "Release date:"
+    ) as HTMLInputElement;
     await user.type(dateInput, "1920");
     expect(dateInput).toBeInvalid();
     expect(dateInput.validationMessage).toBe("Please enter a year after 1950");

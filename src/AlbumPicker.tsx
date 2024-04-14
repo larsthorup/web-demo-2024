@@ -1,15 +1,12 @@
 import { FormEvent, useEffect, useState } from "react";
 import NavigationBar from "./NavigationBar";
-
-interface Album {
-  title: string;
-  date: string;
-}
+import { useAlbumDispatch, useAlbumState } from "./AlbumContext";
 
 export default function AlbumPicker() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const dispatch = useAlbumDispatch();
+  const { albums, artist, date } = useAlbumState();
   const [navigating, setNavigating] = useState(true);
   useEffect(() => {
     setNavigating(false);
@@ -44,7 +41,8 @@ export default function AlbumPicker() {
       releases: { title: string; date: string }[];
     };
     const { releases } = mbResult;
-    setAlbums(releases.map(({ title, date }) => ({ title, date })));
+    const albums = releases.map(({ title, date }) => ({ title, date }));
+    dispatch({ type: "fetched", payload: { albums, artist, date } });
     const logUrl = "https://eolqod83qyz4plh.m.pipedream.net";
     const logResponse = await fetch(logUrl, {
       method: "POST",
@@ -72,7 +70,7 @@ export default function AlbumPicker() {
       <form onSubmit={handleSubmit} aria-label="search">
         <label>
           Artist name:
-          <input name="artist" />
+          <input name="artist" defaultValue={artist}/>
         </label>
         <br />
         <label htmlFor="date">Release date:</label>
@@ -81,6 +79,7 @@ export default function AlbumPicker() {
           name="date"
           type="number"
           min={1950}
+          defaultValue={date}
           onInput={onValidate}
         />
         <button type="submit">Search</button>
