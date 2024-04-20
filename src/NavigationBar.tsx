@@ -10,6 +10,9 @@ export default function NavigationBar() {
         <li>
           <Link to="/albums">Albums</Link>
         </li>
+        <li>
+          <Link to="/login">Login</Link>
+        </li>
       </ul>
     </nav>
   );
