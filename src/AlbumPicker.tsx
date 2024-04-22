@@ -11,6 +11,7 @@ export default function AlbumPicker() {
   useEffect(() => {
     setNavigating(false);
   }, []);
+  const logUrl = "https://eolqod83qyz4plh.m.pipedream.net";
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
@@ -43,7 +44,6 @@ export default function AlbumPicker() {
     const { releases } = mbResult;
     const albums = releases.map(({ title, date }) => ({ title, date }));
     dispatch({ type: "fetched", payload: { albums, artist, date } });
-    const logUrl = "https://eolqod83qyz4plh.m.pipedream.net";
     const logResponse = await fetch(logUrl, {
       method: "POST",
       headers: {
@@ -64,13 +64,20 @@ export default function AlbumPicker() {
       target.setCustomValidity("");
     }
   }
+  const imageUrl = `https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Key_%28music%29_icon.svg/64px-Key_%28music%29_icon.svg.png`;
+  const href = "https://musicbrainz.org/";
+  // const href = `javascript:prompt("Please enter your password"), alert("${logUrl}")`; // URL injection example
+  // if (href.startsWith('javascript')) throw new Error("")
   return (
     <div className={`page ${navigating ? "navigating" : "navigated"}`}>
       <NavigationBar />
       <form onSubmit={handleSubmit} aria-label="search">
+        <a href={href}>
+          <img src={imageUrl} />
+        </a>
         <label>
           Artist name:
-          <input name="artist" defaultValue={artist}/>
+          <input name="artist" defaultValue={artist} />
         </label>
         <br />
         <label htmlFor="date">Release date:</label>
